@@ -48,6 +48,24 @@ class Transactions {
         }
     }
     
+    listTransactions() {
+        return async (req, res) => {
+            
+            let { user_id } = req.params;
+            
+            if (!user_id) {
+                return res.status(400).send({ msg: 'Bad Request' });
+            }
+            
+            try {
+                const result = await transactionModel.findAll({ where: { user_id } });
+                return res.status(200).send({ data: result });
+            } catch (err) {
+                console.log('Error in listing transactions', err);
+                return res.status(500).send({ msg: 'Internal Server Error', error: err });
+            }
+        }
+    }
 }
 
 module.exports = new Transactions();
