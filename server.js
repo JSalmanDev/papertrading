@@ -24,6 +24,29 @@ app.get('/*', function(req, res) {
   })
 });
 
+//DB Models
+const users = require("./modules/users/users_model");
+const transactions = require("./modules/trasnactionsHistory/transaction_history_model");
+
+let promiseArray = [];
+// // sync db models
+promiseArray.push(users.sync());
+
+Promise.all(promiseArray)
+  .then(() => {
+      transactions.belongsTo(users);
+      transactions.sync()
+        .then(() => {
+            console.log('Tables synced successfully');
+        })
+        .catch(err => {
+            console.log("Table Sync Error: ", err);            
+        })
+  })
+  .catch(err => {
+    console.log("Table Sync Error: ", err);
+  });
+
 const PORT = process.env.PORT || 8081;
 
 app.listen(PORT, () => {
